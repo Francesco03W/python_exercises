@@ -1,6 +1,12 @@
 import math
 import decimal
 
+#Todo: Per migliorare uso
+# togliere il troncamento dopo la 2a cifra significativa per incertezza
+# togliere il troncamento dei decimali della stima al n° di cifre decimali dell'incertezza
+# Riscrivere test per le modifiche
+
+
 def input_values(n):
     """
     User input for list of values used in other functions
@@ -8,7 +14,7 @@ def input_values(n):
     n = number of values
     """
     if not n.isdigit():
-        print("Fatal error. Not an integer value")
+        print("Input Error. Not an integer value")
         exit()
         
     n=int(n)
@@ -42,7 +48,8 @@ def uncertainty_R(nominal_R,tolerance_R):
     tolerance_R=int(tolerance_R)
 	#uniform distribution:
     a = (nominal_R*tolerance_R)/100
-    u_R = format(a / math.sqrt(3.0),'.2g')
+    ##u_R = format(a / math.sqrt(3.0),'.2g')
+    u_R = a / math.sqrt(3.0)
     return u_R
 
 def A_evaluation(values,n):
@@ -62,20 +69,22 @@ def A_evaluation(values,n):
     sqrt_diff=[]
     for i in range(n):
         sqrt_diff.append((values[i]-esteem_V)**2)
-    u_V=format(math.sqrt((1/(n*(n-1))*(math.fsum(sqrt_diff)))),'.2g')
+    #u_V=format(math.sqrt((1/(n*(n-1))*(math.fsum(sqrt_diff)))),'.2g') 
+    u_V=math.sqrt((1/(n*(n-1))*(math.fsum(sqrt_diff))))
 
     #rappresento la stima della misura a seconda delle cifre decimali
     # dell'incertezza, una volta fissate le 2 cifre significative.
-    esteem_decimals=abs(decimal.Decimal(u_V).as_tuple().exponent)
+    #esteem_decimals=abs(decimal.Decimal(u_V).as_tuple().exponent)
 
     #troncamento della stima secondo i decimali dell'incertezza a 2 cifre sign.
-    esteem_V=format(esteem_V,f'.{esteem_decimals}f')
+    #esteem_V=format(esteem_V,f'.{esteem_decimals}f')
+
     return esteem_V,u_V
 
 def correction_accuracy(rng,rng_coeff,rdg,rdg_coeff):
-    return (format((((float(rng_coeff)*float(rng))+(float(rdg_coeff)*float(rdg)))/math.sqrt(3)),'.2g'))
-    
-
+    #return (format((((float(rng_coeff)*float(rng))+(float(rdg_coeff)*float(rdg)))/math.sqrt(3)),'.2g')) 
+    return (((float(rng_coeff)*float(rng))+(float(rdg_coeff)*float(rdg)))/math.sqrt(3))
+   
 if __name__ ==  "__main__":
     import doctest
     print("Measurement Uncertainty Tool")
@@ -84,11 +93,6 @@ Insert A key - A evaluation of input measure
 Insert B key - B evaluation of resistance measure
 Insert C key - B evaluation of measurement accuracy
 Insert any other key to close the program
-----------------------------------------------------
-Inserire A - Valutazione tipo A misura in input
-Inserire B - Valutazione tipo B misura di resistenza
-Inserire C - Valutazione tipo B incertezza dovuta all'accuratezza dello strumento
-Inserire qualsiasi altro tasto per uscire dal programma
 """
     #per chiudere il programma conviene ragionare con logica negata! più elegante
     print(text)
