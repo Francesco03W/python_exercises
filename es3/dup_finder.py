@@ -10,26 +10,9 @@ def is_image(path,extensions):
     path: string file path
     extensions: list of extensions
     """
-    if isinstance(path,str):
-        if isinstance(extensions,list):
-            if len(extensions) != 0:
-                #se i parametri sono corretti
-                #per ricavare l'ultimo segmento del percorso, non possiamo fare assegnazioni di str.split a tupla (non noto numero di elementi) -> lista
-                segments=path.split("/")
-                file=segments[len(segments)-1]
-                #per endswith devo usare tupla
-                extensions_tuple=tuple(extensions)
-                #ammette anche il caso di lista vuota con 1 elemento
-                # ovvero tutte le estensioni sono valide
-                if file.endswith(extensions_tuple):
-                    return True
-            else:
-                 print("Empty list error")
-        else:
-            print("List argument error")
-    else:
-        print("Path argument error")
-    
+    for ext in extensions:
+        if path.lower().endswith(extension):
+            return True
     return False
 
 def add_path(path, d):
@@ -59,16 +42,14 @@ def walk_images(dirname, d):
     d : defaultdict of lists
     """
     #listdir senza argomenti prende la $PWD del file .py!!!
-    ls=os.listdir(dirname)
     #md5_hash=hashlib.md5()
-    for p in ls:
-        p_path=dirname+'/'+p
+    for p in os.listdir(dirname):
+        p_path=os.join(dirname,p)
         if os.path.isfile(p_path):
             if is_image(p_path,['.jpg','.jpeg']):
                 add_path(p_path,d)
-        else:
-            if os.path.isdir(p_path):
-                walk_images(p_path,d)
+        elif os.path.isdir(p_path):
+            walk_images(p_path,d)
 
 def main():
     d = collections.defaultdict(list)
